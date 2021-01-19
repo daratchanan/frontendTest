@@ -1,25 +1,18 @@
-import logo from './logo.svg';
-import './App.css';
+import CssTest from "./page/CssTest";
+import Front_endTest from "./page/Front_endTest";
+import CssBaseline from '@material-ui/core/CssBaseline';
+
+
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+   
+   return (
+      <>
+         <CssBaseline />
+         {/* <CssTest /> */}
+         <Front_endTest />
+      </>
+   );
 }
 
 export default App;
