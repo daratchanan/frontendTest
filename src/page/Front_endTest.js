@@ -145,16 +145,16 @@ function Front_endTest() {
    const classes = useStyle();
 
    return (
-      <div>
+      <Box component="div">
            <CssBaseline />
-         <div className={classes.container}>
-            <div className={classes.left}>
-               <div className={classes.lhDetails}>
-                  <div className={classes.leftHeader}>
+         <Box component="div" className={classes.container}>
+            <Box component="div" className={classes.left}>
+               <Box component="div" className={classes.lhDetails}>
+                  <Box component="div" className={classes.leftHeader}>
                      <Typography className={classes.roomLabel}>
                         A101
                      </Typography>
-                  </div>
+                  </Box>
 
                   <Typography className={classes.upComing}>
                      Upcoming
@@ -186,10 +186,10 @@ function Front_endTest() {
                         </Typography>
                      </Box>
                   </Box>
-               </div>
-            </div>
+               </Box>
+            </Box>
 
-            <div className={classes.right}>
+            <Box className={classes.right}>
                <BrowserRouter>
                   <Box component="div" className={classes.rightHeader}>
                      <nav className={classes.menu}>
@@ -287,9 +287,9 @@ function Front_endTest() {
                      </Box>
                   </Box>
                </Box>
-            </div>
-         </div>
-      </div>
+            </Box>
+         </Box>
+      </Box>
    )
 }
 

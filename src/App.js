@@ -8,9 +8,8 @@ function App() {
    
    return (
       <>
-       
-         <CssTest />
-         {/* <Front_endTest /> */}
+         {/* <CssTest /> */}
+         <Front_endTest />
       </>
    );
 }
