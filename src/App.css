@@ -1,0 +1,12 @@
+.main-container {
+   background: lightgray;
+   padding: 0 4%;
+}
+.headerTitle {
+   display: flex;
+   justify-content: space-between;
+}
+.picture {
+   height: 150px;
+   margin: 0 2px;
+}

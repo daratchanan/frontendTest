@@ -1,25 +1,10 @@
-import { makeStyles, Typography } from '@material-ui/core';
+import '../App.css';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import CssBaseline from '@material-ui/core/CssBaseline';
 
-const useStyle = makeStyles({
-   container: {
-      backgroundColor: "lightgray",
-      padding: " 0 4%"
-   },
-   header: {
-      display: "flex",
-      justifyContent: "space-between",
-   },
-   picture: {
-      height: "150px",
-      margin: "0 2px",
-   },
-})
 
 function CssTest() {
-   const classes = useStyle();
+
    const [image, setImage] = useState([]);
 
    const fetchAllImage = async () => {
@@ -40,19 +25,18 @@ function CssTest() {
 
    return (
       <>
-         <CssBaseline />
-         <div className={classes.container}>
-            <div className={classes.header}>
-               <Typography variant="body1" component="p">
+         <div className="main-container">
+            <div className="headerTitle">
+               <p>
                   Everyone's photos
-            </Typography>
-               <Typography variant="body1" component="p">
+               </p>
+               <p>
                   View all {image.length}
-               </Typography>
+               </p>
             </div>
-            <div>
+            <div >
                {image.map(pic =>
-                  <img className={classes.picture} src={pic.download_url} />
+                  <img key={pic.id} className="picture" src={pic.download_url} />
                )}
             </div>
          </div>

@@ -1,7 +1,7 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import { Box } from '@material-ui/core';
+import { Box, CssBaseline } from '@material-ui/core';
 import { BrowserRouter, Link } from 'react-router-dom';
 
 
@@ -18,7 +18,7 @@ const useStyle = makeStyles({
       background: "#46529D",
       display: "flex",
    },
-   lh: {
+   lhDetails: {
       marginLeft: "90px",
    },
    leftHeader: {
@@ -146,9 +146,10 @@ function Front_endTest() {
 
    return (
       <div>
+           <CssBaseline />
          <div className={classes.container}>
             <div className={classes.left}>
-               <div className={classes.lh}>
+               <div className={classes.lhDetails}>
                   <div className={classes.leftHeader}>
                      <Typography className={classes.roomLabel}>
                         A101
