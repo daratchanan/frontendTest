@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 
 
-function CssTest() {
+function CssTestPage() {
 
    const [image, setImage] = useState([]);
 
@@ -44,4 +44,4 @@ function CssTest() {
    );
 }
 
-export default CssTest;
+export default CssTestPage;

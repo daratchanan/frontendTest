@@ -1,10 +1,12 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import { Box, CssBaseline } from '@material-ui/core';
-import { BrowserRouter, Link } from 'react-router-dom';
+import { BrowserRouter, Link, useParams, useHistory, useLocation } from 'react-router-dom';
+import bookingData from '../data/booking.json'
+import bookings from '../data/booking-js' 
 
-
+console.log(bookings, ';;;;;bookingzzzzzzz')
 const useStyle = makeStyles({
    container: {
       width: "1479px",
@@ -97,6 +99,10 @@ const useStyle = makeStyles({
    },
    menuLink: {
       textDecoration: "none",
+
+   },
+   menuLinkActive: {
+      textDecorationLine: "underline"
    },
    menuLinkGap: {
       paddingLeft: "75px",
@@ -141,8 +147,20 @@ const useStyle = makeStyles({
    },
 })
 
-function Front_endTest() {
+function BookingPage() {
+   const params = useParams()
+   const history = useHistory()
+   const location = useLocation()
+   
+   const searchParams = new URLSearchParams(location.search)
+   console.log(searchParams.get('roomId'))
+   console.log(searchParams.get('roomType'))
    const classes = useStyle();
+   // const [time, setTime] = useState('THIS_WEEK')
+   const thisWeekClassName = params.time === 'thisweek' ? `${classes.menuLink} ${classes.menuLinkActive}` : classes.menuLink 
+   const nextWeekClassName = params.time === 'nextweek'? 
+      `${classes.menuLink} ${classes.menuLinkGap} ${classes.menuLinkActive}`
+      : `${classes.menuLink} ${classes.menuLinkGap}` 
 
    return (
       <Box component="div">
@@ -193,8 +211,17 @@ function Front_endTest() {
                <BrowserRouter>
                   <Box component="div" className={classes.rightHeader}>
                      <nav className={classes.menu}>
-                        <Link className={classes.menuLink}>this week</Link>
-                        <Link className={`${classes.menuLink} ${classes.menuLinkGap}`}>next week</Link>
+                        <Link className={thisWeekClassName} to="/bookings/thisweek">this week</Link>
+                        {/* Redirect to other page by button */}
+                        {/* <button onClick={() => {
+                           history.push("/bookings/nextweek")
+                        }}>
+                           nextweek
+                        </button> */}
+
+                        <Link className={nextWeekClassName}  to="/bookings/nextweek">
+                              next week
+                        </Link>
                         <Link className={`${classes.menuLink} ${classes.menuLinkGap}`}>whole month</Link>
                      </nav>
                   </Box>
@@ -293,4 +320,4 @@ function Front_endTest() {
    )
 }
 
-export default Front_endTest;
+export default BookingPage;

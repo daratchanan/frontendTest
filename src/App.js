@@ -1,15 +1,18 @@
-import CssTest from "./page/CssTest";
-import Front_endTest from "./page/Front_endTest";
-import CssBaseline from '@material-ui/core/CssBaseline';
-
+import CssTestPage from "./page/CssTestPage";
+import BookingPage from "./page/BookingPage";
+import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'
 
 
 function App() {
    
    return (
       <>
-         {/* <CssTest /> */}
-         <Front_endTest />
+         <Router>
+            <Switch>
+               <Route path="/csstest" component={CssTestPage} />
+               <Route path="/bookings/:time" component={BookingPage} />
+            </Switch>
+         </Router>
       </>
    );
 }
