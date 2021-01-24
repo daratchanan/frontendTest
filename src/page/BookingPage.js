@@ -3,10 +3,13 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import { Box, CssBaseline } from '@material-ui/core';
 import { BrowserRouter, Link, useParams, useHistory, useLocation } from 'react-router-dom';
-import bookingData from '../data/booking.json'
-import bookings from '../data/booking-js' 
+import dayjs from "dayjs";
+import weekOfYear from 'dayjs/plugin/weekOfYear';
+import { bookingData } from '../data/bookingData';
 
-console.log(bookings, ';;;;;bookingzzzzzzz')
+dayjs.extend(weekOfYear);
+
+
 const useStyle = makeStyles({
    container: {
       width: "1479px",
@@ -147,30 +150,63 @@ const useStyle = makeStyles({
    },
 })
 
+
 function BookingPage() {
+   const classes = useStyle();
    const params = useParams()
    const history = useHistory()
    const location = useLocation()
-   
-   const searchParams = new URLSearchParams(location.search)
-   console.log(searchParams.get('roomId'))
-   console.log(searchParams.get('roomType'))
-   const classes = useStyle();
    // const [time, setTime] = useState('THIS_WEEK')
-   const thisWeekClassName = params.time === 'thisweek' ? `${classes.menuLink} ${classes.menuLinkActive}` : classes.menuLink 
-   const nextWeekClassName = params.time === 'nextweek'? 
+   const thisWeekClassName = params.time === 'thisweek' ? `${classes.menuLink} ${classes.menuLinkActive}` : classes.menuLink
+   const nextWeekClassName = params.time === 'nextweek' ?
       `${classes.menuLink} ${classes.menuLinkGap} ${classes.menuLinkActive}`
-      : `${classes.menuLink} ${classes.menuLinkGap}` 
+      : `${classes.menuLink} ${classes.menuLinkGap}`
+
+   const today = "2019-09-28";
+   const [todayList, setTodayList] = useState([]);
+
+
+
+
+   //console.log(params);
+   //console.log(location);
+
+   const searchParams = new URLSearchParams(location.search)
+   //console.log(searchParams);
+   const roomLabel = searchParams.get('roomId');
+
+   //console.log(searchParams.get('roomId'))
+
+
+   const getBookingForWeek = (roomId, weekNo) => {
+      const targetRoom = bookingData.filter(room => room.roomId === roomId);
+      const allDay = targetRoom
+         .filter(day => dayjs(day.startTime).format("YYYY-MM-DD") === dayjs(weekNo).format("YYYY-MM-DD"));
+      const thisWeek = targetRoom
+         .filter(day => dayjs(day.startTime).week() === dayjs(weekNo).week());
+      const nextWeek = targetRoom
+         .filter(day => dayjs(day.startTime).week() === dayjs(weekNo).week() + 1);
+      const wholeMonth = targetRoom
+         .filter(day => dayjs(day.startTime).month() === dayjs(weekNo).month());
+
+      return { allDay, thisWeek, nextWeek, wholeMonth }
+   };
+
+   useEffect(() => {
+      const { allDay } = getBookingForWeek(roomLabel, today);
+      setTodayList(allDay);
+   }, [])
+
 
    return (
       <Box component="div">
-           <CssBaseline />
+         <CssBaseline />
          <Box component="div" className={classes.container}>
             <Box component="div" className={classes.left}>
                <Box component="div" className={classes.lhDetails}>
                   <Box component="div" className={classes.leftHeader}>
                      <Typography className={classes.roomLabel}>
-                        A101
+                        {roomLabel}
                      </Typography>
                   </Box>
 
@@ -179,30 +215,24 @@ function BookingPage() {
                   </Typography>
 
                   <Typography className={classes.day}>
-                     Monday
+                     {dayjs(today).format("dddd")}
                   </Typography>
 
                   <Typography className={classes.date}>
-                     28 Sep
+                     {dayjs(today).format("DD MMM")}
                   </Typography>
 
                   <Box component="div" className={classes.bookingDetail}>
-                     <Box component="div" className={classes.bookingList}>
-                        <Typography className={classes.time}>
-                           13.00 - 14.00
-                        </Typography>
-                        <Typography className={classes.bookingTitle}>
-                           Lunch with Petr
-                        </Typography>
-                     </Box>
-                     <Box component="div" className={classes.bookingList}>
-                        <Typography className={classes.time}>
-                           15.00 - 16.00
-                        </Typography>
-                        <Typography className={classes.bookingTitle}>
-                           Sale Weekly Meeting
-                        </Typography>
-                     </Box>
+                     {todayList.map(data =>
+                        <Box component="div" className={classes.bookingList}>
+                           <Typography className={classes.time}>
+                              {dayjs(data.startTime).format("HH.mm")} - {dayjs(data.endTime).format("HH.mm")}
+                           </Typography>
+                           <Typography className={classes.bookingTitle}>
+                              {data.title}
+                           </Typography>
+                        </Box>
+                     )}
                   </Box>
                </Box>
             </Box>
@@ -219,8 +249,8 @@ function BookingPage() {
                            nextweek
                         </button> */}
 
-                        <Link className={nextWeekClassName}  to="/bookings/nextweek">
-                              next week
+                        <Link className={nextWeekClassName} to="/bookings/nextweek">
+                           next week
                         </Link>
                         <Link className={`${classes.menuLink} ${classes.menuLinkGap}`}>whole month</Link>
                      </nav>

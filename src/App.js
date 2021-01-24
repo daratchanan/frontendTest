@@ -1,18 +1,19 @@
 import CssTestPage from "./page/CssTestPage";
 import BookingPage from "./page/BookingPage";
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'
+import { BrowserRouter , Switch, Route} from 'react-router-dom'
+
 
 
 function App() {
    
    return (
       <>
-         <Router>
+         <BrowserRouter>
             <Switch>
                <Route path="/csstest" component={CssTestPage} />
                <Route path="/bookings/:time" component={BookingPage} />
             </Switch>
-         </Router>
+         </BrowserRouter>
       </>
    );
 }
