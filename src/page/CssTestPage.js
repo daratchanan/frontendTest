@@ -16,12 +16,10 @@ function CssTestPage() {
          .catch(err => {
             console.log("err");
          })
-
    }
    useEffect(() => {
       fetchAllImage();
    }, []);
-
 
    return (
       <>

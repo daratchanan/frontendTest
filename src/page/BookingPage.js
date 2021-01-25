@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import { Box, CssBaseline } from '@material-ui/core';
-import { BrowserRouter, Link, useParams, useHistory, useLocation } from 'react-router-dom';
+import { BrowserRouter,useParams, useHistory, useLocation } from 'react-router-dom';
 import dayjs from "dayjs";
 import weekOfYear from 'dayjs/plugin/weekOfYear';
 import { bookingData } from '../data/bookingData';
-
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Button from '@material-ui/core/Button';
 dayjs.extend(weekOfYear);
-
 
 const useStyle = makeStyles({
    container: {
@@ -92,7 +93,6 @@ const useStyle = makeStyles({
       display: "flex",
       justifyContent: "flex-end",
       flexDirection: "column",
-      paddingBottom: "28px"
    },
    menu: {
       marginLeft: "64px",
@@ -101,14 +101,15 @@ const useStyle = makeStyles({
       textTransform: "uppercase",
    },
    menuLink: {
-      textDecoration: "none",
-
+      color: "#000000",
+      opacity: "0.5",
+      fontSize: "24px",
    },
    menuLinkActive: {
-      textDecorationLine: "underline"
-   },
-   menuLinkGap: {
-      paddingLeft: "75px",
+      borderBottom: "2px solid #46529D",
+      borderRadius: 0,
+      color: "#000000",
+      fontSize: "24px",
    },
    dayLabel: {
       marginTop: "78px",
@@ -150,33 +151,18 @@ const useStyle = makeStyles({
    },
 })
 
-
 function BookingPage() {
    const classes = useStyle();
-   const params = useParams()
+   const { time } = useParams()
    const history = useHistory()
    const location = useLocation()
-   // const [time, setTime] = useState('THIS_WEEK')
-   const thisWeekClassName = params.time === 'thisweek' ? `${classes.menuLink} ${classes.menuLinkActive}` : classes.menuLink
-   const nextWeekClassName = params.time === 'nextweek' ?
-      `${classes.menuLink} ${classes.menuLinkGap} ${classes.menuLinkActive}`
-      : `${classes.menuLink} ${classes.menuLinkGap}`
-
    const today = "2019-09-28";
+
    const [todayList, setTodayList] = useState([]);
-
-
-
-
-   //console.log(params);
-   //console.log(location);
+   const [allBooking, setAllBooking] = useState([]);
 
    const searchParams = new URLSearchParams(location.search)
-   //console.log(searchParams);
    const roomLabel = searchParams.get('roomId');
-
-   //console.log(searchParams.get('roomId'))
-
 
    const getBookingForWeek = (roomId, weekNo) => {
       const targetRoom = bookingData.filter(room => room.roomId === roomId);
@@ -192,9 +178,37 @@ function BookingPage() {
       return { allDay, thisWeek, nextWeek, wholeMonth }
    };
 
+   const groupData = (data) => {
+      const result = {};
+      for (let i = 0; i < data.length; i++) {
+         const start = dayjs(data[i].startTime).format('YYYY-MM-DD');
+         if (result[start]) {
+            result[start].push(data[i])
+         } else {
+            result[start] = [data[i]]
+         }
+      }
+      setAllBooking(Object.entries(result));
+   };
+
+   const allData = (allTime) => {
+      history.push(`/bookings/${allTime}?roomId=${roomLabel}`);
+
+      const { thisWeek, nextWeek, wholeMonth } = getBookingForWeek(roomLabel, today);
+      
+      if (allTime === "thisweek") {
+         groupData(thisWeek);
+      } else if (allTime === "nextweek") {
+         groupData(nextWeek);
+      } else if (allTime === "wholemonth") {
+         groupData(wholeMonth);
+      }
+   };
+
    useEffect(() => {
       const { allDay } = getBookingForWeek(roomLabel, today);
       setTodayList(allDay);
+      allData("thisweek");
    }, [])
 
 
@@ -239,110 +253,59 @@ function BookingPage() {
 
             <Box className={classes.right}>
                <BrowserRouter>
-                  <Box component="div" className={classes.rightHeader}>
-                     <nav className={classes.menu}>
-                        <Link className={thisWeekClassName} to="/bookings/thisweek">this week</Link>
-                        {/* Redirect to other page by button */}
-                        {/* <button onClick={() => {
-                           history.push("/bookings/nextweek")
-                        }}>
-                           nextweek
-                        </button> */}
-
-                        <Link className={nextWeekClassName} to="/bookings/nextweek">
+                  <AppBar position="static" className={classes.rightHeader}>
+                     <Toolbar>
+                        <Button
+                           className={time === "thisweek" ? classes.menuLinkActive : classes.menuLink}
+                           onClick={() => allData("thisweek")}
+                        >
+                           this week
+                        </Button>
+                        <Button
+                           className={time === "nextweek" ? classes.menuLinkActive : classes.menuLink}
+                           onClick={() => allData("nextweek")}
+                        >
                            next week
-                        </Link>
-                        <Link className={`${classes.menuLink} ${classes.menuLinkGap}`}>whole month</Link>
-                     </nav>
-                  </Box>
+                        </Button>
+                        <Button
+                           className={time === "wholemonth" ? classes.menuLinkActive : classes.menuLink}
+                           onClick={() => allData("wholemonth")}
+                        >
+                           whole month
+                        </Button>
+                     </Toolbar>
+                  </AppBar>
                </BrowserRouter>
 
                <Box component="div">
-                  <Box component="div" className={classes.dayLabel}>
-                     <Typography className={classes.dateLabel} >
-                        Today(Mon,28 Sep)
-                  </Typography>
-                  </Box>
-
-                  <Box component="div" className={classes.bookingDetailRight}>
-                     <Box component="div" className={classes.bookingListRight}>
-                        <Box component="div">
-                           <Typography className={classes.marking} style={{ color: "#3DC7D2" }}>
-                              ⬤
-                     </Typography>
+                  {allBooking.map(data =>
+                     <Box component="div">
+                        <Box component="div" className={classes.dayLabel}>
+                           <Typography className={classes.dateLabel} >
+                              {time === "thisweek"? "Today" : ""} {time === "thisweek"? "(" : ""}{dayjs(data[0]).format("ddd, DD MMM")}{time === "thisweek"? ")" : ""}
+                           </Typography>
                         </Box>
-                        <Box component="div" style={{ marginLeft: "30px" }}>
-                           <Typography className={classes.timeRight}>
-                              13.00 - 14.00
-                        </Typography>
-                           <Typography className={classes.bookingTitleRight}>
-                              Lunch with Petr
-                        </Typography>
+                        {data[1].map(dataList => 
+                        <Box component="div" className={classes.bookingDetailRight}>
+                           <Box component="div" className={classes.bookingListRight}>
+                              <Box component="div">
+                                 <Typography className={classes.marking} style={{ color: "#3DC7D2" }}>
+                                    ⬤
+                                 </Typography>
+                              </Box>
+                              <Box component="div" style={{ marginLeft: "30px" }}>
+                                 <Typography className={classes.timeRight}>
+                                    {dayjs(dataList.startTime).format("HH:mm")} - {dayjs(dataList.endTime).format("HH:mm")}
+                                 </Typography>
+                                 <Typography className={classes.bookingTitleRight}>
+                                    {dataList.title}
+                                 </Typography>
+                              </Box>
+                           </Box>
                         </Box>
+                        )}
                      </Box>
-                  </Box>
-
-                  <Box component="div" className={classes.bookingDetailRight}>
-                     <Box component="div" className={classes.bookingListRight}>
-                        <Box component="div">
-                           <Typography className={classes.marking} style={{ color: "#23CF5F" }}>
-                              ⬤
-                     </Typography>
-                        </Box>
-                        <Box component="div" style={{ marginLeft: "30px" }}>
-                           <Typography className={classes.timeRight}>
-                              13.00 - 14.00
-                        </Typography>
-                           <Typography className={classes.bookingTitleRight}>
-                              Lunch with Petr
-                        </Typography>
-                        </Box>
-                     </Box>
-                  </Box>
-               </Box>
-
-               <Box component="div">
-                  <Box component="div" className={classes.dayLabel}>
-                     <Typography className={classes.dateLabel} >
-                        Tomorrow(Tue,29 Sep)
-                  </Typography>
-                  </Box>
-
-                  <Box component="div" className={classes.bookingDetailRight}>
-                     <Box component="div" className={classes.bookingListRight}>
-                        <Box component="div">
-                           <Typography className={classes.marking} style={{ color: "#3DC7D2" }}>
-                              ⬤
-                     </Typography>
-                        </Box>
-                        <Box component="div" style={{ marginLeft: "30px" }}>
-                           <Typography className={classes.timeRight}>
-                              13.00 - 14.00
-                        </Typography>
-                           <Typography className={classes.bookingTitleRight}>
-                              Lunch with Petr
-                        </Typography>
-                        </Box>
-                     </Box>
-                  </Box>
-
-                  <Box component="div" className={classes.bookingDetailRight}>
-                     <Box component="div" className={classes.bookingListRight}>
-                        <Box component="div">
-                           <Typography className={classes.marking} style={{ color: "#23CF5F" }}>
-                              ⬤
-                     </Typography>
-                        </Box>
-                        <Box component="div" style={{ marginLeft: "30px" }}>
-                           <Typography className={classes.timeRight}>
-                              13.00 - 14.00
-                        </Typography>
-                           <Typography className={classes.bookingTitleRight}>
-                              Lunch with Petr
-                        </Typography>
-                        </Box>
-                     </Box>
-                  </Box>
+                  )}
                </Box>
             </Box>
          </Box>
